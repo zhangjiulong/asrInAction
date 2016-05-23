@@ -1,0 +1,3 @@
+def calMels(freq):
+    ret = 1125.0 * math.log(1.0 + lowFre / 700.0, math.e)
+    return ret
