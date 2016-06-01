@@ -26,11 +26,11 @@ def framesig(sig,frame_len,frame_step,winfunc=lambda x:numpy.ones((1,x))):
     zeros = numpy.zeros((padlen - slen,))
     padsignal = numpy.concatenate((sig,zeros))
     
-    indices = numpy.tile(numpy.arange(0,frame_len),(numframes,1)) + numpy.tile(numpy.arange(0,numframes*frame_step,frame_step),(frame_len,1)).T
+    indices = numpy.tile(numpy.arange(0,frame_len),(numframes,1)) + numpy.tile(numpy.arange(0,numframes*frame_step,frame_step),(frame_len,1)).T # study the thinging way
     indices = numpy.array(indices,dtype=numpy.int32)
-    frames = padsignal[indices]
+    frames = padsignal[indices] # set value method
     win = numpy.tile(winfunc(frame_len),(numframes,1))
-    return frames*win
+    return frames*win # matrix dot product
     
     
 def deframesig(frames,siglen,frame_len,frame_step,winfunc=lambda x:numpy.ones((1,x))):
