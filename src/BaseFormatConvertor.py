@@ -1,7 +1,5 @@
 #coding=utf-8
 
-
-
 class BaseFormatConvertor():
     def __init__(self, srcDir, dstDir):
         self.__srcDir = srcDir
@@ -26,6 +24,4 @@ class BaseFormatConvertor():
     
     def convert(self):
         print 'src is ' + self.__srcDir
-
-
 

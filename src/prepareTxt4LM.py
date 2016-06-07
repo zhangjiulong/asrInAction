@@ -188,7 +188,7 @@ if __name__ == '__main__':
     dic2 = '/home/zhangjl/dataCenter/asr/tedlium/cantab-TEDLIUM/cantab-TEDLIUM.dct'
     dstDic = '/home/zhangjl/dataCenter/lm/engLMData/timit.4lm.dic'
     
-    mergeDicts(dic1, dic2, dstDic)
+    mergeDicts(dic2, dic1, dstDic)
 '''
     #inFile = '/home/zhangjl/dataCenter/lm/engLMData/timit.txt'
     inFile = '/home/zhangjl/dataCenter/lm/engLMData/timit.txt'
