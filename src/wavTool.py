@@ -59,10 +59,21 @@ def getAllSoundsLong(dir):
 
     return totalLen
 
+def checkAllFreq(dir):
+    wavList = getWavDirSounds(dir, '.*\.wav')
+    for item in wavList:
+        f = wave.open(item, "rb")
+        params = f.getparams()
+        frameRate = params[2]
+        if frameRate != 8000:
+            print 'file is '  + item
+
 if __name__ == '__main__':
     
-    dir = '/home/zhangjl/dataCenter/asr/td/vx/vx'
+    dir = '/home/zhangjl/dataCenter/asr/td/vx/wav/'
     #ret = getWavDirSounds(dir, '*.wav')
     #print len(ret)
-    ret = getAllSoundsLong(dir)
-    print 'total len is ' + str(ret)
+    #ret = getAllSoundsLong(dir)
+    #print 'total len is ' + str(ret) + 's\n'
+    #print 'total len is ' + str(ret / 3600.0) + 'h\n'
+    checkAllFreq(dir)
