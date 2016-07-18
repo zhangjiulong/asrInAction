@@ -50,3 +50,5 @@ def listDirWithPattern(dirStr, listPattern = '.*'):
     
     return ret
 
+if __name__ == '__main__':
+    print 'k'

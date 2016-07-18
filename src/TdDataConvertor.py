@@ -192,6 +192,7 @@ class Td2TedliumFormat(BaseFormatConvertor):
 
         # process lines like this '[0:06.650,0:08.057,A]你好很高兴为您服务'
         while 1:
+            dic2rmduptime = {}
             line = f.readline()
             if not line:
                 break
@@ -211,6 +212,19 @@ class Td2TedliumFormat(BaseFormatConvertor):
                     pass
                 else:
                     sex = 'A'
+            if endTime <= startTime:
+                print 'time error at file %s line %s '%(fileName, line)
+                continue
+            
+            if endTime - startTime < 0.1:
+                print 'short time error at file %s line %s '%(fileName, line)
+                continue
+            
+            if dic2rmduptime.has_key(startTime):
+                print 'dup time error at file %s line %s '%(fileName, line)
+                continue
+
+            dic2rmduptime[startTime] = 1
             line2write = ''
             try:
                 line2writePre = fn + ' ' + wc + ' ' + speakerID + ' ' + str(startTime) + ' ' + str(endTime) + ' ' + '<o,f0,' + sexile[sex] + '>'
@@ -276,7 +290,7 @@ if __name__ == '__main__':
     #dirName = '/home/zhangjl/dataCenter/asr/td/vx/'
     #td2TedliumFormat.checkDir(dirName)
     #td2TedliumFormat.convertTxt2Stm('/home/zhangjl/dataCenter/asr/td/vx/txt_u8/1110498.txt', '/home/zhangjl/dataCenter/asr/td/vx/stm/1110498.stm')
-    td2TedliumFormat.convert()
+    #td2TedliumFormat.convert()
     #str = '[0:40.928,0:42.043]/mix'
     #lastPattern = re.compile(r'\[([\d]+)[:;]([\d\.]+),([\d]+)[:;]([\d\.]+),?([A-Z]?)\](.*)$')
 

@@ -1,8 +1,8 @@
 #coding=utf-8
 
-import getopt, sys, os, codecs, re
+import getopt, sys, os, codecs, re, jieba
 
-def prepareDic(dicMapFile, targetDicFile, txtFile, targetTxtFile, errorResultFile):
+def prepareDic(dicMapFile, targetDicFile, txtFile, targetTxtFile, errorResultFile, fileSeged = True):
     
     #check dic file exists.
     if not os.path.exists(dicMapFile) and os.path.isfile(dicMapFile):
@@ -19,6 +19,7 @@ def prepareDic(dicMapFile, targetDicFile, txtFile, targetTxtFile, errorResultFil
     # def dic 4 write
     targetDicFilePtr = codecs.open(targetDicFile, 'w', 'utf-8')
     targetTxtFilePtr = codecs.open(targetTxtFile, 'w', 'utf-8')
+    delTxtFilePtr = codecs.open(targetTxtFile + '.del', 'w', 'utf-8')
     txtFilePtr = codecs.open(txtFile, 'r', 'utf-8')
 
     # read dic file
@@ -47,10 +48,16 @@ def prepareDic(dicMapFile, targetDicFile, txtFile, targetTxtFile, errorResultFil
         lineNum = lineNum + 1
         line = line.strip().lower()
         
+        # add by zhangjl on 20160705 processing unsegmented line.
+        if not fileSeged:
+            line = " ".join(jieba.cut(line, cut_all = False))
+            line = line.strip()
+        
         words = []
         phonetics = []
         
         wordsinline = line.split()
+        need2write = True
         for wordinline in wordsinline:
             if dict.has_key(wordinline):
                 phonetic = dict[wordinline]
@@ -58,10 +65,12 @@ def prepareDic(dicMapFile, targetDicFile, txtFile, targetTxtFile, errorResultFil
                 words.append(wordinline)
                 usedDict[wordinline] = phonetic
             else:
+        
                 match = pureEngPattern.match(wordinline)
                 if match:
                     print 'eng word may not in the dic [%s] line num is [%d]'%(wordinline, lineNum)
                     engNotInDic[wordinline] = 1
+                    need2write = False
                     continue
                 else:
                     for subword in wordinline:
@@ -71,12 +80,22 @@ def prepareDic(dicMapFile, targetDicFile, txtFile, targetTxtFile, errorResultFil
                             words.append(subword)
                             usedDict[subword] = phonetic
                         else:
-                            print 'no phnetic for word [%s] line is [%d]'%(subword, lineNum) 
+                            
                             hanNotInDic[subword] = 1
+                            if subword >= u'/u4e00' and subword <= u'/u9fa5':
+                                need2write = False
+                                print 'han no [%s] line is [%d]'%(subword, lineNum) 
+                            else:
+                                print 'no phnetic for word [%s] line is [%d]'%(subword, lineNum) 
+                                pass
+    
         line2write = ' '.join(words).strip()
-        #for i in range(0, len(words)):
-        #    line2write = line2write + words[i]
-        targetTxtFilePtr.write(line2write + '\n')
+
+        if need2write:
+            targetTxtFilePtr.write(line2write.strip() + '\n')            
+        else:
+            delTxtFilePtr.write(line2write.strip() + '\n')
+
         
     for key in usedDict:
         targetDicFilePtr.write(key)
@@ -94,10 +113,17 @@ def prepareDic(dicMapFile, targetDicFile, txtFile, targetTxtFile, errorResultFil
 
 
 if __name__ == '__main__':
-    dicMapFile = '/home/zhangjl/dataCenter/lm/td/zh_broadcastnews_utf8.dic'
-    targetDicFile = '/home/zhangjl/dataCenter/lm/td/td.dic'
-    txtFile = '/home/zhangjl/dataCenter/lm/td/td.txt'
-    targetTxtFile = '/home/zhangjl/dataCenter/lm/td/td_indic.txt'
-    errorResultFile = '/home/zhangjl/dataCenter/lm/td/tdresult.txt'
-    prepareDic(dicMapFile,targetDicFile, txtFile, targetTxtFile, errorResultFile)
+    #dicMapFile = '/home/zhangjl/dataCenter/lm/td/zh_broadcastnews_utf8.dic'
+    #targetDicFile = '/home/zhangjl/dataCenter/lm/td/td.dic'
+    #txtFile = '/home/zhangjl/dataCenter/lm/td/td.txt'
+    #targetTxtFile = '/home/zhangjl/dataCenter/lm/td/td_indic.txt'
+    #errorResultFile = '/home/zhangjl/dataCenter/lm/td/tdresult.txt'
+    #prepareDic(dicMapFile,targetDicFile, txtFile, targetTxtFile, errorResultFile)
                             
+
+    dicMapFile = '/home/zhangjl/dataCenter/lm/tdCheck/zh_broadcastnews_utf8.dic'
+    txtFile = '/home/zhangjl/dataCenter/lm/tdUKaldiQun/union.txt'
+    targetDicFile = '/home/zhangjl/dataCenter/lm/tdUKaldiQun/union.formated.dic'
+    targetTxtFile = '/home/zhangjl/dataCenter/lm/tdUKaldiQun/union.formated.txt'
+    errorResultFile = '/home/zhangjl/dataCenter/lm/tdUKaldiQun/result.txt'
+    prepareDic(dicMapFile,targetDicFile, txtFile, targetTxtFile, errorResultFile, fileSeged = True)

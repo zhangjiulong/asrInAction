@@ -3,6 +3,7 @@
 import os
 import re
 import shutil
+import codecs
 
 from fileTool import *
 
@@ -122,7 +123,6 @@ def rmPunc(inFile, outFile):
     of.close()
 
 def genStr4Lm(inStr):
-    
     ret = inStr
 
     # to lower
@@ -177,6 +177,18 @@ def genOOV(dicFile, txtFile, oovFile):
     oovF.flush()
     oovF.close()
 
+def clearEngWords(inFile, outFile):
+    inf1 = codecs.open(inFile)
+    outf1 = codecs.open(outFile, 'w+')
+    outf2 = codecs.open(outFile + '.eng.txt', 'w+')
+    p = re.compile('.*[a-zA-Z]+.*')
+    #p = re.compile('[你]+')
+    for line in inf1:
+        if p.match(line):
+            outf2.write(line)
+        else:
+            outf1.write(line)
+
 if __name__ == '__main__':
     inDir = '/home/zhangjl/dataCenter/asr/timit'
     outFile = '/home/zhangjl/dataCenter/asr/timit/txtInOne.txt'
@@ -188,7 +200,15 @@ if __name__ == '__main__':
     dic2 = '/home/zhangjl/dataCenter/asr/tedlium/cantab-TEDLIUM/cantab-TEDLIUM.dct'
     dstDic = '/home/zhangjl/dataCenter/lm/engLMData/timit.4lm.dic'
     
-    mergeDicts(dic2, dic1, dstDic)
+    #mergeDicts(dic2, dic1, dstDic)
+
+    inFile = '/home/zhangjl/dataCenter/lm/tdNoEng/td.txt'
+    outFile = '/home/zhangjl/dataCenter/lm/tdNoEng/td.noeng.txt'
+    #inFile = '/home/zhangjl/dataCenter/lm/td.noeng.txt.eng.txt'
+    #outFile = '/home/zhangjl/dataCenter/lm/td_news/td.noeng.tx3t'
+
+    clearEngWords(inFile, outFile)
+    
 '''
     #inFile = '/home/zhangjl/dataCenter/lm/engLMData/timit.txt'
     inFile = '/home/zhangjl/dataCenter/lm/engLMData/timit.txt'
